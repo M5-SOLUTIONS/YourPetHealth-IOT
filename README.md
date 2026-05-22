@@ -64,7 +64,7 @@ O sistema funciona da seguinte forma:
 ![Dashboard](Imagens/Dashboard.png)
 
 ### Fluxo Node-RED
-![Fluxos Node-RED](Imagens/Fluxo Node-RED.png)
+![Fluxos Node-RED](Imagens/Fluxo%20Node-RED.png)
 
 ### Wokwi
 ![Diagrama Wokwi](Imagens/Wokwi.png)
