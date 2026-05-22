@@ -1,0 +1,537 @@
+[
+    {
+        "id": "be74cf9b8c48cc03",
+        "type": "subflow",
+        "name": "Subflow 1",
+        "info": "",
+        "in": [
+            {
+                "x": 60,
+                "y": 80,
+                "wires": [
+                    {
+                        "id": "n_toast_alerta"
+                    }
+                ]
+            }
+        ],
+        "out": []
+    },
+    {
+        "id": "n_toast_alerta",
+        "type": "ui_toast",
+        "z": "be74cf9b8c48cc03",
+        "position": "top right",
+        "displayTime": "5",
+        "highlight": "",
+        "sendall": true,
+        "outputs": 0,
+        "ok": "",
+        "cancel": "",
+        "raw": false,
+        "className": "",
+        "topic": "",
+        "name": "Alerta Temperatura Sala",
+        "x": 250,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "b83ca0cfe8707069",
+        "type": "tab",
+        "label": "Fluxo 3",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "18b440e3f4515297",
+        "type": "group",
+        "z": "b83ca0cfe8707069",
+        "style": {
+            "stroke": "#999999",
+            "stroke-opacity": "1",
+            "fill": "none",
+            "fill-opacity": "1",
+            "label": true,
+            "label-position": "nw",
+            "color": "#a4a4a4"
+        },
+        "nodes": [],
+        "x": 394,
+        "y": 279,
+        "w": 40,
+        "h": 40
+    },
+    {
+        "id": "n_mqtt_dados",
+        "type": "mqtt in",
+        "z": "b83ca0cfe8707069",
+        "name": "Recebe Dados Pet",
+        "topic": "fiap/vet/pet01/dados",
+        "broker": "broker1",
+        "inputs": 0,
+        "x": 130,
+        "y": 620,
+        "wires": [
+            [
+                "n_parse_dados"
+            ]
+        ]
+    },
+    {
+        "id": "n_parse_dados",
+        "type": "json",
+        "z": "b83ca0cfe8707069",
+        "name": "Parse JSON Dados",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 490,
+        "y": 620,
+        "wires": [
+            [
+                "n_ext_temp",
+                "n_ext_bpm",
+                "n_status_conforto",
+                "aef4570c4af7f4ad"
+            ]
+        ]
+    },
+    {
+        "id": "n_ext_temp",
+        "type": "function",
+        "z": "b83ca0cfe8707069",
+        "name": "Extrai Temperatura",
+        "func": "msg.payload = msg.payload.temp_ambiente;\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 750,
+        "y": 540,
+        "wires": [
+            [
+                "n_gauge_temp",
+                "n_chart_temp"
+            ]
+        ]
+    },
+    {
+        "id": "n_ext_bpm",
+        "type": "function",
+        "z": "b83ca0cfe8707069",
+        "name": "Extrai BPM",
+        "func": "msg.payload = msg.payload.bpm;\nreturn msg;",
+        "outputs": 1,
+        "x": 750,
+        "y": 620,
+        "wires": [
+            [
+                "n_gauge_bpm"
+            ]
+        ]
+    },
+    {
+        "id": "n_status_conforto",
+        "type": "function",
+        "z": "b83ca0cfe8707069",
+        "name": "Status Conforto",
+        "func": "var d = msg.payload;\nif (d.desconfortavel) {\n    msg.payload = '⚠️ Ambiente inadequado para ' + d.tipo + ' (' + d.temp_ambiente + '°C)';\n} else {\n    msg.payload = '✅ Ambiente confortável para ' + d.tipo + ' (' + d.temp_ambiente + '°C)';\n}\nreturn msg;",
+        "outputs": 1,
+        "x": 740,
+        "y": 740,
+        "wires": [
+            [
+                "n_texto_status"
+            ]
+        ]
+    },
+    {
+        "id": "n_gauge_temp",
+        "type": "ui_gauge",
+        "z": "b83ca0cfe8707069",
+        "name": "Gauge Temperatura Sala",
+        "group": "group_saude",
+        "order": 1,
+        "width": "3",
+        "height": "3",
+        "gtype": "gage",
+        "title": "Temperatura da Sala (°C)",
+        "label": "°C",
+        "format": "{{value}}",
+        "min": "10",
+        "max": "40",
+        "colors": [
+            "#00b4ff",
+            "#00ff00",
+            "#ff0000"
+        ],
+        "seg1": "18",
+        "seg2": "26",
+        "x": 1090,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "n_gauge_bpm",
+        "type": "ui_gauge",
+        "z": "b83ca0cfe8707069",
+        "name": "Gauge BPM",
+        "group": "group_saude",
+        "order": 2,
+        "width": "3",
+        "height": "3",
+        "gtype": "gage",
+        "title": "Frequência Cardíaca (BPM)",
+        "label": "bpm",
+        "format": "{{value}}",
+        "min": "40",
+        "max": "200",
+        "colors": [
+            "#00b4ff",
+            "#00ff00",
+            "#ff0000"
+        ],
+        "seg1": "60",
+        "seg2": "160",
+        "x": 750,
+        "y": 680,
+        "wires": []
+    },
+    {
+        "id": "n_chart_temp",
+        "type": "ui_chart",
+        "z": "b83ca0cfe8707069",
+        "name": "Histórico Temperatura",
+        "group": "group_historico",
+        "order": 1,
+        "width": "12",
+        "height": "4",
+        "label": "Temperatura da Sala ao longo do tempo",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "nodata": "",
+        "dot": false,
+        "ymin": "10",
+        "ymax": "40",
+        "removeOlder": "1",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": "",
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 1080,
+        "y": 640,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "n_texto_status",
+        "type": "ui_text",
+        "z": "b83ca0cfe8707069",
+        "group": "group_status",
+        "order": 1,
+        "width": "12",
+        "height": "1",
+        "name": "Status Ambiente",
+        "label": "",
+        "format": "{{msg.payload}}",
+        "layout": "col-center",
+        "x": 740,
+        "y": 800,
+        "wires": []
+    },
+    {
+        "id": "n_mqtt_cadastro",
+        "type": "mqtt in",
+        "z": "b83ca0cfe8707069",
+        "name": "Recebe Cadastro",
+        "topic": "fiap/vet/cadastro",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "broker1",
+        "nl": false,
+        "rap": false,
+        "inputs": 0,
+        "x": 160,
+        "y": 220,
+        "wires": [
+            [
+                "n_parse_cadastro",
+                "99e25b5cee91eedb"
+            ]
+        ]
+    },
+    {
+        "id": "n_parse_cadastro",
+        "type": "json",
+        "z": "b83ca0cfe8707069",
+        "name": "Parse JSON Cadastro",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 500,
+        "y": 220,
+        "wires": [
+            [
+                "n_formata_cadastro",
+                "54ed148e2c4cd710"
+            ]
+        ]
+    },
+    {
+        "id": "n_formata_cadastro",
+        "type": "function",
+        "z": "b83ca0cfe8707069",
+        "name": "Formata Cadastro",
+        "func": "if (typeof msg.payload === 'string') {\n    msg.payload = JSON.parse(msg.payload);\n}\nvar p = msg.payload;\nmsg.payload = '🐾 ' + p.nome + '  |  ' + p.tipo + ' - ' + p.raca + '  |  Tutor: ' + p.tutor;\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 790,
+        "y": 220,
+        "wires": [
+            [
+                "n_exibe_cadastro"
+            ]
+        ]
+    },
+    {
+        "id": "n_exibe_cadastro",
+        "type": "ui_text",
+        "z": "b83ca0cfe8707069",
+        "group": "group_cadastro",
+        "order": 1,
+        "width": "6",
+        "height": "1",
+        "name": "Exibe Cadastro",
+        "label": "Animal",
+        "format": "{{msg.payload}}",
+        "layout": "col-center",
+        "x": 1080,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "n_mqtt_alerta",
+        "type": "mqtt in",
+        "z": "b83ca0cfe8707069",
+        "name": "Recebe Alerta Sala",
+        "topic": "fiap/vet/sala01/alerta",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "broker1",
+        "nl": false,
+        "rap": false,
+        "inputs": 0,
+        "x": 170,
+        "y": 420,
+        "wires": [
+            [
+                "n_parse_alerta",
+                "05b47f44700a8c06"
+            ]
+        ]
+    },
+    {
+        "id": "n_parse_alerta",
+        "type": "json",
+        "z": "b83ca0cfe8707069",
+        "name": "Parse JSON Alerta",
+        "x": 510,
+        "y": 400,
+        "wires": [
+            [
+                "n_formata_alerta",
+                "05b47f44700a8c06"
+            ]
+        ]
+    },
+    {
+        "id": "n_formata_alerta",
+        "type": "function",
+        "z": "b83ca0cfe8707069",
+        "name": "Formata Alerta",
+        "func": "msg.payload = '🚨 ' + msg.payload.mensagem;\nreturn msg;",
+        "outputs": 1,
+        "x": 880,
+        "y": 400,
+        "wires": [
+            [
+                "239528079c4e9667"
+            ]
+        ]
+    },
+    {
+        "id": "239528079c4e9667",
+        "type": "subflow:be74cf9b8c48cc03",
+        "z": "b83ca0cfe8707069",
+        "x": 1140,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "99e25b5cee91eedb",
+        "type": "debug",
+        "z": "b83ca0cfe8707069",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 180,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "05b47f44700a8c06",
+        "type": "debug",
+        "z": "b83ca0cfe8707069",
+        "name": "debug 2",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 480,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "aef4570c4af7f4ad",
+        "type": "debug",
+        "z": "b83ca0cfe8707069",
+        "name": "debug 3",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 480,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "54ed148e2c4cd710",
+        "type": "debug",
+        "z": "b83ca0cfe8707069",
+        "name": "debug 4",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 760,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "broker1",
+        "type": "mqtt-broker",
+        "name": "HiveMQ Público T",
+        "broker": "broker.hivemq.com",
+        "port": "1883",
+        "clientid": "NodeRedVet456",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "group_saude",
+        "type": "ui_group",
+        "name": "Monitoramento da Sala",
+        "tab": "aa6c48da0cefcd8d",
+        "order": 2,
+        "disp": true,
+        "width": "6"
+    },
+    {
+        "id": "group_historico",
+        "type": "ui_group",
+        "name": "Histórico de Temperatura",
+        "tab": "aa6c48da0cefcd8d",
+        "order": 3,
+        "disp": true,
+        "width": "12"
+    },
+    {
+        "id": "group_status",
+        "type": "ui_group",
+        "name": "Status do Ambiente",
+        "tab": "aa6c48da0cefcd8d",
+        "order": 4,
+        "disp": true,
+        "width": "12"
+    },
+    {
+        "id": "group_cadastro",
+        "type": "ui_group",
+        "name": "Animal em Atendimento",
+        "tab": "aa6c48da0cefcd8d",
+        "order": 1,
+        "disp": true,
+        "width": "6"
+    },
+    {
+        "id": "aa6c48da0cefcd8d",
+        "type": "ui_tab",
+        "name": "Monitor Veterinário",
+        "icon": "dashboard",
+        "order": 1
+    },
+    {
+        "id": "40d53f03a9b33cbd",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "node-red-dashboard": "3.6.6"
+        }
+    }
+]
