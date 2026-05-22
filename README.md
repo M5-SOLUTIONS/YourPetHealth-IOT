@@ -87,6 +87,7 @@ O sistema funciona da seguinte forma:
 
 ## Estrutura do Repositório
 
+` 
 YourPetHealth-IOT/
 ├── Imagens/
 │   ├── Dashboard.png
@@ -99,6 +100,7 @@ YourPetHealth-IOT/
 │   └── wokwi-project.txt
 ├── flows.json           
 └── README.md
+`
 
 
 
