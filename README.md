@@ -119,3 +119,12 @@ YourPetHealth-IOT/
 **Link do Projeto no Wokwi:**  
 [https://wokwi.com/projects/464688749816104961](https://wokwi.com/projects/464688749816104961)
 
+# Desenvolvido por
+
+- Erick de Faria Gama RM561951
+- Daniel Fonseca de Almeida RM563045
+- Guilherme Cintra RM562850
+- Pedro Fonseca de Almeida RM563466
+- Matheus Nascimento Corregio RM563765
+
+
